@@ -157,14 +157,14 @@ stmts : stmts stmt {
 print : PRINT '(' expr ')' ';' {$$ = createCall("print", $3);}
 
 // possible stmts 
-stmt 			: IF '(' cond_expr ')' stmt %prec THEN {$$ = createIf($3, $5); printf("i got here");}
-     				| IF '(' cond_expr ')' stmt ELSE stmt {$$ = createIf($3, $5, $7);printf("if got here");}
-     				| WHILE '(' cond_expr ')' block_stmt {$$ = createWhile($3, $5);printf("while got here");}
-     				| RETURN ';' {$$ = createRet(NULL); printf("return got here");}
-     				| RETURN '(' expr ')' ';' {$$ = createRet($3);printf("return expr got here");}
+stmt 			: IF '(' cond_expr ')' stmt %prec THEN {$$ = createIf($3, $5);}
+     				| IF '(' cond_expr ')' stmt ELSE stmt {$$ = createIf($3, $5, $7);}
+     				| WHILE '(' cond_expr ')' block_stmt {$$ = createWhile($3, $5);}
+     				| RETURN ';' {$$ = createRet(NULL);}
+     				| RETURN '(' expr ')' ';' {$$ = createRet($3);}
                     | RETURN expr ';' {$$ = createRet($2);}
-     				| block_stmt {$$ = $1; printf("nblock stat got here");}
-     				| ID EQUALS expr ';' {astNode* tnptr = createVar($1); $$ = createAsgn(tnptr, $3); printf("equals got here"); free($1);}
+     				| block_stmt {$$ = $1;}
+     				| ID EQUALS expr ';' {astNode* tnptr = createVar($1); $$ = createAsgn(tnptr, $3); free($1);}
 					| print {$$ = $1;}
      				;
 
