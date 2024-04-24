@@ -208,18 +208,17 @@ int main(int argc, char* argv[]){
     yyparse();
 
 	if(rootNode == NULL){
-		fprintf(stderr, "Root node is null\n");
+		fprintf(stderr, fi"Root node is null\n");
 	}
 
     // Call semantic analysis
     // Initialize the stack of symbol tables to empty
     stack<SymbolTable> symbolTableStack;
 	if(rootNode!=NULL){
-		if(!visitNode(rootNode, symbolTableStack)){
+	    if (!visitNode(rootNode, symbolTableStack)){
             fprintf(stderr, "Error: semantic analysis failed!\n");
-        } else {
-            freeNode(rootNode);
-        }
+        }    
+        freeNode(rootNode);
 	}    
 
     if (argc == 2) fclose(yyin);

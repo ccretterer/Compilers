@@ -35,7 +35,6 @@ bool visitNode(astNode* node, stack<SymbolTable>& symbolTableStack){
         if (node->func.body != nullptr && node->func.body->type == ast_stmt && node->func.body->stmt.type == ast_block) {
             astNode* blockNode = node->func.body;
             if (!symbolTableStack.empty()) {
-                SymbolTable& curr_sym_table = symbolTableStack.top();
                 if (blockNode->stmt.block.stmt_list != nullptr) {
                     for (astNode* stmt : *(blockNode->stmt.block.stmt_list)) {
                         // handling possible errors where the stmt is a null pointer
@@ -49,12 +48,34 @@ bool visitNode(astNode* node, stack<SymbolTable>& symbolTableStack){
                 symbolTableStack.pop();
             }
         }
+        // if the node is a function node: 
+        // create a new symbol table curr_sym_table and push it to the symbol table stack
+        // if func node has a parameter add parameter to curr_sym_table
+        // visit the body node of the function node
+        // pop top of the stack
+        else {
+            SymbolTable curr_sym_table;
+            symbolTableStack.push(curr_sym_table);
+            if (node->func.param != nullptr) {
+                curr_sym_table.push_back(node->func.param->var.name);
+            }
+            // checking to make sure function body is not a null pointer
+            if (node->func.body == nullptr) {
+                fprintf(stderr, "Function body node is null.\n");
+                return false;
+            } else {
+                visitNode(node->func.body, symbolTableStack);
+            }
+            symbolTableStack.pop();
+        }
     }
+
+
     // if the node is a block statement node: 
     // create a new symbol table curr_sym_table and push it to the symbol table stack
     // visit all nodes in the statement list of block statement 
     // pop top of the stack
-    else if (node->type == ast_stmt && node->stmt.type == ast_block){
+    if (node->type == ast_stmt && node->stmt.type == ast_block){
         SymbolTable curr_sym_table;
         symbolTableStack.push(curr_sym_table);
         if(node->stmt.block.stmt_list != NULL){
@@ -62,6 +83,7 @@ bool visitNode(astNode* node, stack<SymbolTable>& symbolTableStack){
                 // handling possible errors where the stmt is a null pointer
                 if(stmt == nullptr){
                     fprintf(stderr, "Statement node is null.\n");
+                    return false;
                 }
                 visitNode(stmt, symbolTableStack);
             }
@@ -69,30 +91,10 @@ bool visitNode(astNode* node, stack<SymbolTable>& symbolTableStack){
         symbolTableStack.pop();
     }
 
-    // if the node is a function node: 
-    // create a new symbol table curr_sym_table and push it to the symbol table stack
-    // if func node has a parameter add parameter to curr_sym_table
-    // visit the body node of the function node
-    // pop top of the stack
-    else if (node->type == ast_func) {
-        SymbolTable curr_sym_table;
-        symbolTableStack.push(curr_sym_table);
-        if (node->func.param != nullptr) {
-            curr_sym_table.push_back(node->func.param->var.name);
-        }
-        // checking to make sure function body is not a null pointer
-        if (node->func.body == nullptr) {
-            fprintf(stderr, "Function body node is null.\n");
-        } else {
-            visitNode(node->func.body, symbolTableStack);
-        }
-        symbolTableStack.pop();
-    }
-
     // if the node is a declaration statement, check if the variable is in the symbol table 
     // at the top of the stack. If it does, then emit an error message. 
     // Otherwise, add the variable to the symbol table at the top of the stack.
-    else if(node->type == ast_stmt && node->stmt.type == ast_decl){
+    if(node->type == ast_stmt && node->stmt.type == ast_decl){
         if (!symbolTableStack.empty()) {
             //find symbol table at top of stack
             SymbolTable& curr_table = symbolTableStack.top();
@@ -100,10 +102,12 @@ bool visitNode(astNode* node, stack<SymbolTable>& symbolTableStack){
             // making sure declName is not null
             if(declName == NULL){
                 fprintf(stderr, "Declaration name is null.\n");
+                return false;
             }
             //iterate through symbol table
             if (std::find(curr_table.begin(),curr_table.end(), declName) != curr_table.end()){
                 printf("Error: Variable has already been declared.'%s'\n", declName); 
+                return false;
             }
             else{
                 curr_table.push_back(declName);
@@ -113,11 +117,12 @@ bool visitNode(astNode* node, stack<SymbolTable>& symbolTableStack){
 
     // if the node is a variable node, check if it appears in one of the symbol tables on the stack. 
     // If it does not, then emit an error message with name of the variable.
-    else if(node->type == ast_var) {
+    if(node->type == ast_var) {
         char* varName = node->var.name;
         // checking to make sure variable name isn't null
         if(varName == NULL){
             fprintf(stderr, "varName is null\n");
+            return false;
         }
         bool ifFound = false;  // bool to keep track of whether or not variable name has beem foumd
         stack<SymbolTable> curr_stack = symbolTableStack;  //initializing empty stack and copying current stack to it
@@ -132,6 +137,7 @@ bool visitNode(astNode* node, stack<SymbolTable>& symbolTableStack){
         }
         if (!ifFound) {
             printf("Error: Variable has not been declared. '%s'\n", varName);
+            return false;
         }
     }
 
