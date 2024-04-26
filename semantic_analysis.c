@@ -32,43 +32,45 @@ bool visitNode(astNode* node, stack<SymbolTable>& symbolTableStack){
     // visit all nodes in the statement list of block statement 
     // pop top of the stack
     if (node->type == ast_func) {
-        if (node->func.body != nullptr && node->func.body->type == ast_stmt && node->func.body->stmt.type == ast_block) {
             astNode* blockNode = node->func.body;
-            if (!symbolTableStack.empty()) {
-                if (blockNode->stmt.block.stmt_list != nullptr) {
-                    for (astNode* stmt : *(blockNode->stmt.block.stmt_list)) {
-                        // handling possible errors where the stmt is a null pointer
-                        if (stmt == nullptr) {
-                            fprintf(stderr, "Statement node is null\n");
-                            continue;
-                        }
-                        visitNode(stmt, symbolTableStack);
-                    }
-                }
-                symbolTableStack.pop();
-            }
-        }
-        // if the node is a function node: 
-        // create a new symbol table curr_sym_table and push it to the symbol table stack
-        // if func node has a parameter add parameter to curr_sym_table
-        // visit the body node of the function node
-        // pop top of the stack
-        else {
             SymbolTable curr_sym_table;
             symbolTableStack.push(curr_sym_table);
             if (node->func.param != nullptr) {
                 curr_sym_table.push_back(node->func.param->var.name);
             }
-            // checking to make sure function body is not a null pointer
-            if (node->func.body == nullptr) {
-                fprintf(stderr, "Function body node is null.\n");
-                return false;
-            } else {
-                visitNode(node->func.body, symbolTableStack);
+            if (blockNode->stmt.block.stmt_list != nullptr) {
+                for (astNode* stmt : *(blockNode->stmt.block.stmt_list)) {
+                    // handling possible errors where the stmt is a null pointer
+                    if (stmt == nullptr) {
+                        fprintf(stderr, "Statement node is null\n");
+                        continue;
+                    }
+                    visitNode(stmt, symbolTableStack);
+                }
             }
             symbolTableStack.pop();
-        }
     }
+        // if the node is a function node: 
+        // create a new symbol table curr_sym_table and push it to the symbol table stack
+        // if func node has a parameter add parameter to curr_sym_table
+        // visit the body node of the function node
+        // pop top of the stack
+    //     else {
+    //         SymbolTable curr_sym_table;
+    //         symbolTableStack.push(curr_sym_table);
+    //         if (node->func.param != nullptr) {
+    //             curr_sym_table.push_back(node->func.param->var.name);
+    //         }
+    //         // checking to make sure function body is not a null pointer
+    //         if (node->func.body == nullptr) {
+    //             fprintf(stderr, "Function body node is null.\n");
+    //             return false;
+    //         } else {
+    //             visitNode(node->func.body, symbolTableStack);
+    //         }
+    //         symbolTableStack.pop();
+    //     }
+    // }
 
 
     // if the node is a block statement node: 
