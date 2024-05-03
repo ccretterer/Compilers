@@ -1,0 +1,1002 @@
+Grammar
+
+    0 $accept: prog $end
+
+    1 func: INT ID '(' ')' block_stmt
+    2     | INT ID '(' INT ID ')' block_stmt
+
+    3 prog: extern_list extern_list func
+
+    4 extern_list: EXTERN VOID PRINT '(' INT ')' ';'
+    5            | EXTERN INT READ '(' ')' ';'
+
+    6 block_stmt: '{' var_decls stmts '}'
+    7           | '{' stmts '}'
+
+    8 var_decls: var_decls decl
+    9          | decl
+
+   10 decl: INT ID ';'
+
+   11 stmts: stmts stmt
+   12      | stmt
+
+   13 print: PRINT '(' expr ')' ';'
+
+   14 stmt: IF '(' cond_expr ')' stmt
+   15     | IF '(' cond_expr ')' stmt ELSE stmt
+   16     | WHILE '(' cond_expr ')' block_stmt
+   17     | RETURN ';'
+   18     | RETURN '(' expr ')' ';'
+   19     | RETURN expr ';'
+   20     | block_stmt
+   21     | ID EQUALS expr ';'
+   22     | print
+
+   23 cond_expr: expr EQ expr
+   24          | expr GT expr
+   25          | expr LT expr
+   26          | expr GTE expr
+   27          | expr LTE expr
+
+   28 expr: term PLUS term
+   29     | term MINUS term
+   30     | term MULT term
+   31     | term DIV term
+   32     | READ '(' ')'
+   33     | term
+
+   34 term: NUM
+   35     | ID
+   36     | MINUS term
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+'(' (40) 1 2 4 5 13 14 15 16 18 32
+')' (41) 1 2 4 5 13 14 15 16 18 32
+';' (59) 4 5 10 13 17 18 19 21
+'{' (123) 6 7
+'}' (125) 6 7
+error (256)
+NUM (258) 34
+ID (259) 1 2 10 21 35
+PLUS (260) 28
+MINUS (261) 29 36
+MULT (262) 30
+DIV (263) 31
+INT (264) 1 2 4 5 10
+EXTERN (265) 4 5
+VOID (266) 4
+IF (267) 14 15
+ELSE (268) 15
+WHILE (269) 16
+RETURN (270) 17 18 19
+READ (271) 5 32
+PRINT (272) 4 13
+EQ (273) 23
+GT (274) 24
+LT (275) 25
+GTE (276) 26
+LTE (277) 27
+EQUALS (278) 21
+THEN (279)
+
+
+Nonterminals, with rules where they appear
+
+$accept (30)
+    on left: 0
+func (31)
+    on left: 1 2, on right: 3
+prog (32)
+    on left: 3, on right: 0
+extern_list (33)
+    on left: 4 5, on right: 3
+block_stmt (34)
+    on left: 6 7, on right: 1 2 16 20
+var_decls (35)
+    on left: 8 9, on right: 6 8
+decl (36)
+    on left: 10, on right: 8 9
+stmts (37)
+    on left: 11 12, on right: 6 7 11
+print (38)
+    on left: 13, on right: 22
+stmt (39)
+    on left: 14 15 16 17 18 19 20 21 22, on right: 11 12 14 15
+cond_expr (40)
+    on left: 23 24 25 26 27, on right: 14 15 16
+expr (41)
+    on left: 28 29 30 31 32 33, on right: 13 18 19 21 23 24 25 26 27
+term (42)
+    on left: 34 35 36, on right: 28 29 30 31 33 36
+
+
+state 0
+
+    0 $accept: . prog $end
+
+    EXTERN  shift, and go to state 1
+
+    prog         go to state 2
+    extern_list  go to state 3
+
+
+state 1
+
+    4 extern_list: EXTERN . VOID PRINT '(' INT ')' ';'
+    5            | EXTERN . INT READ '(' ')' ';'
+
+    INT   shift, and go to state 4
+    VOID  shift, and go to state 5
+
+
+state 2
+
+    0 $accept: prog . $end
+
+    $end  shift, and go to state 6
+
+
+state 3
+
+    3 prog: extern_list . extern_list func
+
+    EXTERN  shift, and go to state 1
+
+    extern_list  go to state 7
+
+
+state 4
+
+    5 extern_list: EXTERN INT . READ '(' ')' ';'
+
+    READ  shift, and go to state 8
+
+
+state 5
+
+    4 extern_list: EXTERN VOID . PRINT '(' INT ')' ';'
+
+    PRINT  shift, and go to state 9
+
+
+state 6
+
+    0 $accept: prog $end .
+
+    $default  accept
+
+
+state 7
+
+    3 prog: extern_list extern_list . func
+
+    INT  shift, and go to state 10
+
+    func  go to state 11
+
+
+state 8
+
+    5 extern_list: EXTERN INT READ . '(' ')' ';'
+
+    '('  shift, and go to state 12
+
+
+state 9
+
+    4 extern_list: EXTERN VOID PRINT . '(' INT ')' ';'
+
+    '('  shift, and go to state 13
+
+
+state 10
+
+    1 func: INT . ID '(' ')' block_stmt
+    2     | INT . ID '(' INT ID ')' block_stmt
+
+    ID  shift, and go to state 14
+
+
+state 11
+
+    3 prog: extern_list extern_list func .
+
+    $default  reduce using rule 3 (prog)
+
+
+state 12
+
+    5 extern_list: EXTERN INT READ '(' . ')' ';'
+
+    ')'  shift, and go to state 15
+
+
+state 13
+
+    4 extern_list: EXTERN VOID PRINT '(' . INT ')' ';'
+
+    INT  shift, and go to state 16
+
+
+state 14
+
+    1 func: INT ID . '(' ')' block_stmt
+    2     | INT ID . '(' INT ID ')' block_stmt
+
+    '('  shift, and go to state 17
+
+
+state 15
+
+    5 extern_list: EXTERN INT READ '(' ')' . ';'
+
+    ';'  shift, and go to state 18
+
+
+state 16
+
+    4 extern_list: EXTERN VOID PRINT '(' INT . ')' ';'
+
+    ')'  shift, and go to state 19
+
+
+state 17
+
+    1 func: INT ID '(' . ')' block_stmt
+    2     | INT ID '(' . INT ID ')' block_stmt
+
+    INT  shift, and go to state 20
+    ')'  shift, and go to state 21
+
+
+state 18
+
+    5 extern_list: EXTERN INT READ '(' ')' ';' .
+
+    $default  reduce using rule 5 (extern_list)
+
+
+state 19
+
+    4 extern_list: EXTERN VOID PRINT '(' INT ')' . ';'
+
+    ';'  shift, and go to state 22
+
+
+state 20
+
+    2 func: INT ID '(' INT . ID ')' block_stmt
+
+    ID  shift, and go to state 23
+
+
+state 21
+
+    1 func: INT ID '(' ')' . block_stmt
+
+    '{'  shift, and go to state 24
+
+    block_stmt  go to state 25
+
+
+state 22
+
+    4 extern_list: EXTERN VOID PRINT '(' INT ')' ';' .
+
+    $default  reduce using rule 4 (extern_list)
+
+
+state 23
+
+    2 func: INT ID '(' INT ID . ')' block_stmt
+
+    ')'  shift, and go to state 26
+
+
+state 24
+
+    6 block_stmt: '{' . var_decls stmts '}'
+    7           | '{' . stmts '}'
+
+    ID      shift, and go to state 27
+    INT     shift, and go to state 28
+    IF      shift, and go to state 29
+    WHILE   shift, and go to state 30
+    RETURN  shift, and go to state 31
+    PRINT   shift, and go to state 32
+    '{'     shift, and go to state 24
+
+    block_stmt  go to state 33
+    var_decls   go to state 34
+    decl        go to state 35
+    stmts       go to state 36
+    print       go to state 37
+    stmt        go to state 38
+
+
+state 25
+
+    1 func: INT ID '(' ')' block_stmt .
+
+    $default  reduce using rule 1 (func)
+
+
+state 26
+
+    2 func: INT ID '(' INT ID ')' . block_stmt
+
+    '{'  shift, and go to state 24
+
+    block_stmt  go to state 39
+
+
+state 27
+
+   21 stmt: ID . EQUALS expr ';'
+
+    EQUALS  shift, and go to state 40
+
+
+state 28
+
+   10 decl: INT . ID ';'
+
+    ID  shift, and go to state 41
+
+
+state 29
+
+   14 stmt: IF . '(' cond_expr ')' stmt
+   15     | IF . '(' cond_expr ')' stmt ELSE stmt
+
+    '('  shift, and go to state 42
+
+
+state 30
+
+   16 stmt: WHILE . '(' cond_expr ')' block_stmt
+
+    '('  shift, and go to state 43
+
+
+state 31
+
+   17 stmt: RETURN . ';'
+   18     | RETURN . '(' expr ')' ';'
+   19     | RETURN . expr ';'
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+    '('    shift, and go to state 48
+    ';'    shift, and go to state 49
+
+    expr  go to state 50
+    term  go to state 51
+
+
+state 32
+
+   13 print: PRINT . '(' expr ')' ';'
+
+    '('  shift, and go to state 52
+
+
+state 33
+
+   20 stmt: block_stmt .
+
+    $default  reduce using rule 20 (stmt)
+
+
+state 34
+
+    6 block_stmt: '{' var_decls . stmts '}'
+    8 var_decls: var_decls . decl
+
+    ID      shift, and go to state 27
+    INT     shift, and go to state 28
+    IF      shift, and go to state 29
+    WHILE   shift, and go to state 30
+    RETURN  shift, and go to state 31
+    PRINT   shift, and go to state 32
+    '{'     shift, and go to state 24
+
+    block_stmt  go to state 33
+    decl        go to state 53
+    stmts       go to state 54
+    print       go to state 37
+    stmt        go to state 38
+
+
+state 35
+
+    9 var_decls: decl .
+
+    $default  reduce using rule 9 (var_decls)
+
+
+state 36
+
+    7 block_stmt: '{' stmts . '}'
+   11 stmts: stmts . stmt
+
+    ID      shift, and go to state 27
+    IF      shift, and go to state 29
+    WHILE   shift, and go to state 30
+    RETURN  shift, and go to state 31
+    PRINT   shift, and go to state 32
+    '{'     shift, and go to state 24
+    '}'     shift, and go to state 55
+
+    block_stmt  go to state 33
+    print       go to state 37
+    stmt        go to state 56
+
+
+state 37
+
+   22 stmt: print .
+
+    $default  reduce using rule 22 (stmt)
+
+
+state 38
+
+   12 stmts: stmt .
+
+    $default  reduce using rule 12 (stmts)
+
+
+state 39
+
+    2 func: INT ID '(' INT ID ')' block_stmt .
+
+    $default  reduce using rule 2 (func)
+
+
+state 40
+
+   21 stmt: ID EQUALS . expr ';'
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    expr  go to state 57
+    term  go to state 51
+
+
+state 41
+
+   10 decl: INT ID . ';'
+
+    ';'  shift, and go to state 58
+
+
+state 42
+
+   14 stmt: IF '(' . cond_expr ')' stmt
+   15     | IF '(' . cond_expr ')' stmt ELSE stmt
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    cond_expr  go to state 59
+    expr       go to state 60
+    term       go to state 51
+
+
+state 43
+
+   16 stmt: WHILE '(' . cond_expr ')' block_stmt
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    cond_expr  go to state 61
+    expr       go to state 60
+    term       go to state 51
+
+
+state 44
+
+   34 term: NUM .
+
+    $default  reduce using rule 34 (term)
+
+
+state 45
+
+   35 term: ID .
+
+    $default  reduce using rule 35 (term)
+
+
+state 46
+
+   36 term: MINUS . term
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+
+    term  go to state 62
+
+
+state 47
+
+   32 expr: READ . '(' ')'
+
+    '('  shift, and go to state 63
+
+
+state 48
+
+   18 stmt: RETURN '(' . expr ')' ';'
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    expr  go to state 64
+    term  go to state 51
+
+
+state 49
+
+   17 stmt: RETURN ';' .
+
+    $default  reduce using rule 17 (stmt)
+
+
+state 50
+
+   19 stmt: RETURN expr . ';'
+
+    ';'  shift, and go to state 65
+
+
+state 51
+
+   28 expr: term . PLUS term
+   29     | term . MINUS term
+   30     | term . MULT term
+   31     | term . DIV term
+   33     | term .
+
+    PLUS   shift, and go to state 66
+    MINUS  shift, and go to state 67
+    MULT   shift, and go to state 68
+    DIV    shift, and go to state 69
+
+    $default  reduce using rule 33 (expr)
+
+
+state 52
+
+   13 print: PRINT '(' . expr ')' ';'
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    expr  go to state 70
+    term  go to state 51
+
+
+state 53
+
+    8 var_decls: var_decls decl .
+
+    $default  reduce using rule 8 (var_decls)
+
+
+state 54
+
+    6 block_stmt: '{' var_decls stmts . '}'
+   11 stmts: stmts . stmt
+
+    ID      shift, and go to state 27
+    IF      shift, and go to state 29
+    WHILE   shift, and go to state 30
+    RETURN  shift, and go to state 31
+    PRINT   shift, and go to state 32
+    '{'     shift, and go to state 24
+    '}'     shift, and go to state 71
+
+    block_stmt  go to state 33
+    print       go to state 37
+    stmt        go to state 56
+
+
+state 55
+
+    7 block_stmt: '{' stmts '}' .
+
+    $default  reduce using rule 7 (block_stmt)
+
+
+state 56
+
+   11 stmts: stmts stmt .
+
+    $default  reduce using rule 11 (stmts)
+
+
+state 57
+
+   21 stmt: ID EQUALS expr . ';'
+
+    ';'  shift, and go to state 72
+
+
+state 58
+
+   10 decl: INT ID ';' .
+
+    $default  reduce using rule 10 (decl)
+
+
+state 59
+
+   14 stmt: IF '(' cond_expr . ')' stmt
+   15     | IF '(' cond_expr . ')' stmt ELSE stmt
+
+    ')'  shift, and go to state 73
+
+
+state 60
+
+   23 cond_expr: expr . EQ expr
+   24          | expr . GT expr
+   25          | expr . LT expr
+   26          | expr . GTE expr
+   27          | expr . LTE expr
+
+    EQ   shift, and go to state 74
+    GT   shift, and go to state 75
+    LT   shift, and go to state 76
+    GTE  shift, and go to state 77
+    LTE  shift, and go to state 78
+
+
+state 61
+
+   16 stmt: WHILE '(' cond_expr . ')' block_stmt
+
+    ')'  shift, and go to state 79
+
+
+state 62
+
+   36 term: MINUS term .
+
+    $default  reduce using rule 36 (term)
+
+
+state 63
+
+   32 expr: READ '(' . ')'
+
+    ')'  shift, and go to state 80
+
+
+state 64
+
+   18 stmt: RETURN '(' expr . ')' ';'
+
+    ')'  shift, and go to state 81
+
+
+state 65
+
+   19 stmt: RETURN expr ';' .
+
+    $default  reduce using rule 19 (stmt)
+
+
+state 66
+
+   28 expr: term PLUS . term
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+
+    term  go to state 82
+
+
+state 67
+
+   29 expr: term MINUS . term
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+
+    term  go to state 83
+
+
+state 68
+
+   30 expr: term MULT . term
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+
+    term  go to state 84
+
+
+state 69
+
+   31 expr: term DIV . term
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+
+    term  go to state 85
+
+
+state 70
+
+   13 print: PRINT '(' expr . ')' ';'
+
+    ')'  shift, and go to state 86
+
+
+state 71
+
+    6 block_stmt: '{' var_decls stmts '}' .
+
+    $default  reduce using rule 6 (block_stmt)
+
+
+state 72
+
+   21 stmt: ID EQUALS expr ';' .
+
+    $default  reduce using rule 21 (stmt)
+
+
+state 73
+
+   14 stmt: IF '(' cond_expr ')' . stmt
+   15     | IF '(' cond_expr ')' . stmt ELSE stmt
+
+    ID      shift, and go to state 27
+    IF      shift, and go to state 29
+    WHILE   shift, and go to state 30
+    RETURN  shift, and go to state 31
+    PRINT   shift, and go to state 32
+    '{'     shift, and go to state 24
+
+    block_stmt  go to state 33
+    print       go to state 37
+    stmt        go to state 87
+
+
+state 74
+
+   23 cond_expr: expr EQ . expr
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    expr  go to state 88
+    term  go to state 51
+
+
+state 75
+
+   24 cond_expr: expr GT . expr
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    expr  go to state 89
+    term  go to state 51
+
+
+state 76
+
+   25 cond_expr: expr LT . expr
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    expr  go to state 90
+    term  go to state 51
+
+
+state 77
+
+   26 cond_expr: expr GTE . expr
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    expr  go to state 91
+    term  go to state 51
+
+
+state 78
+
+   27 cond_expr: expr LTE . expr
+
+    NUM    shift, and go to state 44
+    ID     shift, and go to state 45
+    MINUS  shift, and go to state 46
+    READ   shift, and go to state 47
+
+    expr  go to state 92
+    term  go to state 51
+
+
+state 79
+
+   16 stmt: WHILE '(' cond_expr ')' . block_stmt
+
+    '{'  shift, and go to state 24
+
+    block_stmt  go to state 93
+
+
+state 80
+
+   32 expr: READ '(' ')' .
+
+    $default  reduce using rule 32 (expr)
+
+
+state 81
+
+   18 stmt: RETURN '(' expr ')' . ';'
+
+    ';'  shift, and go to state 94
+
+
+state 82
+
+   28 expr: term PLUS term .
+
+    $default  reduce using rule 28 (expr)
+
+
+state 83
+
+   29 expr: term MINUS term .
+
+    $default  reduce using rule 29 (expr)
+
+
+state 84
+
+   30 expr: term MULT term .
+
+    $default  reduce using rule 30 (expr)
+
+
+state 85
+
+   31 expr: term DIV term .
+
+    $default  reduce using rule 31 (expr)
+
+
+state 86
+
+   13 print: PRINT '(' expr ')' . ';'
+
+    ';'  shift, and go to state 95
+
+
+state 87
+
+   14 stmt: IF '(' cond_expr ')' stmt .
+   15     | IF '(' cond_expr ')' stmt . ELSE stmt
+
+    ELSE  shift, and go to state 96
+
+    $default  reduce using rule 14 (stmt)
+
+
+state 88
+
+   23 cond_expr: expr EQ expr .
+
+    $default  reduce using rule 23 (cond_expr)
+
+
+state 89
+
+   24 cond_expr: expr GT expr .
+
+    $default  reduce using rule 24 (cond_expr)
+
+
+state 90
+
+   25 cond_expr: expr LT expr .
+
+    $default  reduce using rule 25 (cond_expr)
+
+
+state 91
+
+   26 cond_expr: expr GTE expr .
+
+    $default  reduce using rule 26 (cond_expr)
+
+
+state 92
+
+   27 cond_expr: expr LTE expr .
+
+    $default  reduce using rule 27 (cond_expr)
+
+
+state 93
+
+   16 stmt: WHILE '(' cond_expr ')' block_stmt .
+
+    $default  reduce using rule 16 (stmt)
+
+
+state 94
+
+   18 stmt: RETURN '(' expr ')' ';' .
+
+    $default  reduce using rule 18 (stmt)
+
+
+state 95
+
+   13 print: PRINT '(' expr ')' ';' .
+
+    $default  reduce using rule 13 (print)
+
+
+state 96
+
+   15 stmt: IF '(' cond_expr ')' stmt ELSE . stmt
+
+    ID      shift, and go to state 27
+    IF      shift, and go to state 29
+    WHILE   shift, and go to state 30
+    RETURN  shift, and go to state 31
+    PRINT   shift, and go to state 32
+    '{'     shift, and go to state 24
+
+    block_stmt  go to state 33
+    print       go to state 37
+    stmt        go to state 97
+
+
+state 97
+
+   15 stmt: IF '(' cond_expr ')' stmt ELSE stmt .
+
+    $default  reduce using rule 15 (stmt)
