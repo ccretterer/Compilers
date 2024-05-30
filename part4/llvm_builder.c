@@ -28,13 +28,6 @@ void rename_variables(astNode* node);
 
 LLVMValueRef functionTraversal(LLVMModuleRef mod, astNode* funcNode) {
     printf("Starting functionTraversal\n");
-    // Declare external read and print functions
-    LLVMTypeRef voidType = LLVMVoidType();
-    LLVMTypeRef int32Type = LLVMInt32Type();
-    LLVMTypeRef readType = LLVMFunctionType(int32Type, NULL, 0, 0);
-    LLVMTypeRef printType = LLVMFunctionType(voidType, &int32Type, 1, 0);
-    LLVMAddFunction(mod, "read", readType);
-    LLVMAddFunction(mod, "print", printType);
 
     LLVMBuilderRef builder = LLVMCreateBuilder();
     LLVMTypeRef int32Type = LLVMInt32Type();
